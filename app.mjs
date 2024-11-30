@@ -14,8 +14,7 @@ async function runExpressApp() {
   app = express();
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json({ extended: true }));
-  app.use('/node_modules',express.static('./node_modules'));
-  app.get('/',express.static("./www"));
+  app.use('/',express.static("./www"));
 }
 
 async function runWebServer() {
