@@ -1,0 +1,2 @@
+# laser-synth
+Laser測距センサーとWebAudioを使った雑なテルミン風シンセ
