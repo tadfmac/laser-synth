@@ -1,0 +1,15 @@
+{
+  "name": "laser synth",
+  "version": "0.1.0",
+  "description": "laser synth",
+  "main": "app.mjs",
+  "type":"module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "D.F.Mac.@TripArts Music <tadfmac@gmail.com> (https://mz4u.net/)",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.1"
+  }
+}

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="jp">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>mi:muz:lsr test</title>
+<style>
+*{
+  padding:0px;
+  margin:0px;
+  box-sizing: border-box;
+  font-family: 'tegaki';
+}
+html{
+  height:100%;
+  width:100%;
+}
+body{
+  height:100%;
+  width:100%;
+}
+
+#start{
+  text-align:center;
+  display:inline-block;
+  width:240px;
+  height:50px;
+  font-size: 30px;
+  line-height: 50px;
+  vertical-align: center;
+  color:black;
+  background-color: pink;
+  border-radius: 50px;
+  cursor: pointer;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;  
+  -webkit-touch-callout: none;
+}
+.fullscreen{
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+.hide{
+  display:none!important;
+}
+
+</style>
+
+</head>
+<body>
+<div id="value"></div>
+<div id="outer" class="fullscreen">
+  <div id="start">はじめる</div>
+</div>
+<script type="module">
+import laser from "./laser.mjs";
+import posnd from "./posnd2.mjs";
+
+////////////////////////////////////////////////////
+// DOM Event handlers
+////////////////////////////////////////////////////
+const $outer = document.querySelector("#outer");
+const $start = document.querySelector("#start");
+const $value = document.querySelector("#value");
+
+$start.onclick = (e) =>{
+  resumeSynth();
+  $outer.classList.add("hide");
+};
+
+////////////////////////////////////////////////////
+// synth / MIDI Event Handlers
+////////////////////////////////////////////////////
+let synth = [];
+let lsr = null;
+let synthNum = 0;
+let sndValue = 0;
+const NUMBER_OF_SYNTH = 3;
+
+async function initSynth(){
+  for(let cnt=0;cnt<NUMBER_OF_SYNTH;cnt ++){
+    let syn = new posnd();
+    syn.init();
+    syn.setGlide(0.5);
+    syn.setADSR([0.1,1.0,1.0,4]);
+    synth.push(syn);
+  }
+  lsr = new laser();
+  lsr.setOnChange(onChange);
+  lsr.setOnTrig(onTrig);
+  lsr.setOnGone(onGone);
+  await lsr.init();
+}
+
+function onChange(devices){
+  console.log("onchange devices="+devices);
+}
+
+function onTrig(_val,device){
+  console.log("trig")
+  sndValue = _val;
+  $value.innerHTML = sndValue;
+  let freq = (sndValue/2)+140
+  synth[synthNum].play(freq,32);
+  synthNum++;
+  synthNum %= NUMBER_OF_SYNTH;
+}
+
+function onGone(device){
+  console.log("gone")
+  console.log("stop");
+  sndValue = 0;
+  $value.innerHTML = sndValue;
+  for(let cnt=0;cnt<synth.length;cnt++){
+    synth[cnt].stop();
+  }
+}
+
+async function resumeSynth(){
+  for(let cnt=0;cnt<NUMBER_OF_SYNTH;cnt ++){
+    synth[cnt].resume();
+  }
+}
+
+initSynth();
+
+</script>
+</body>
+</html>
